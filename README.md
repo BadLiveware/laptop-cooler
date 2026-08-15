@@ -4,7 +4,7 @@ Bare-metal Rust firmware for a PWM-controlled laptop cooler. The complete Xtensa
 
 ## v0.1.0
 
-This may be the worst soldering job i have ever done, but it works so :shrug:
+This may be the worst soldering job i have ever done, but necessity is the mother of all invention(or in this case abominations), and it works so :shrug: 
 
 ![The v0.1.0 laptop cooler controller wiring](docs/images/v0.1.0.jpg)
 
