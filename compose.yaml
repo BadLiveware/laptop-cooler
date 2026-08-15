@@ -1,0 +1,27 @@
+name: laptop-cooler
+
+x-toolchain: &toolchain
+  build:
+    context: .
+    args:
+      ESPUP_VERSION: "0.17.1"
+      ESPFLASH_VERSION: "4.5.0"
+      ESP_TOOLCHAIN_VERSION: "1.95.0.0"
+  working_dir: /workspace
+  user: "${LOCAL_UID:-1000}:${LOCAL_GID:-1000}"
+  environment:
+    CARGO_HOME: /workspace/.cache/cargo
+    CARGO_TARGET_DIR: /workspace/.cache/target
+  volumes:
+    - .:/workspace
+
+services:
+  toolchain:
+    <<: *toolchain
+
+  device:
+    <<: *toolchain
+    devices:
+      - "${SERIAL_DEVICE:-/dev/ttyUSB0}:/dev/ttyUSB0:rwm"
+    group_add:
+      - "${SERIAL_GID:-0}"

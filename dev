@@ -1,0 +1,90 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+ROOT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+COMPOSE=(docker compose --project-directory "$ROOT_DIR" -f "$ROOT_DIR/compose.yaml")
+FIRMWARE=/workspace/.cache/target/xtensa-esp32-none-elf/release/laptop-cooler
+
+export LOCAL_UID="${LOCAL_UID:-$(id -u)}"
+export LOCAL_GID="${LOCAL_GID:-$(id -g)}"
+
+find_serial_device() {
+  local stable_device="/dev/serial/by-id/usb-Silicon_Labs_CP2102_USB_to_UART_Bridge_Controller_0001-if00-port0"
+
+  if [[ -n "${SERIAL_DEVICE:-}" && -e "$SERIAL_DEVICE" ]]; then
+    readlink -f -- "$SERIAL_DEVICE"
+  elif [[ -e "$stable_device" ]]; then
+    readlink -f -- "$stable_device"
+  elif [[ -e /dev/ttyUSB0 ]]; then
+    printf '%s\n' /dev/ttyUSB0
+  else
+    printf '%s\n' "No ESP32 serial device found. Connect it or set SERIAL_DEVICE." >&2
+    return 1
+  fi
+}
+
+run_toolchain() {
+  "${COMPOSE[@]}" run --build --rm toolchain "$@"
+}
+
+run_device() {
+  export SERIAL_DEVICE
+  SERIAL_DEVICE="$(find_serial_device)"
+  export SERIAL_GID="${SERIAL_GID:-$(stat -c %g "$SERIAL_DEVICE")}"
+  "${COMPOSE[@]}" run --build --rm device "$@"
+}
+
+usage() {
+  cat <<'EOF'
+Usage: ./dev COMMAND
+
+Commands:
+  build           Compile release firmware with Rust
+  clean           Remove Cargo build output
+  upload          Compile and flash the connected ESP32
+  monitor         Open the interactive serial monitor
+  monitor-log     Stream serial output without terminal input
+  upload-monitor  Flash, then open the serial monitor
+  info            Show Rust tools and detected-device information
+  shell           Open a shell in the Rust toolchain container
+EOF
+}
+
+command="${1:-}"
+case "$command" in
+  build)
+    run_toolchain cargo build --release
+    ;;
+  clean)
+    run_toolchain cargo clean
+    ;;
+  upload)
+    run_device bash -c "cargo build --release && espflash flash --chip esp32 --port /dev/ttyUSB0 '$FIRMWARE'"
+    ;;
+  monitor)
+    run_device espflash monitor --port /dev/ttyUSB0
+    ;;
+  monitor-log)
+    run_device espflash monitor --non-interactive --port /dev/ttyUSB0
+    ;;
+  upload-monitor)
+    run_device bash -c "cargo build --release && espflash flash --monitor --chip esp32 --port /dev/ttyUSB0 '$FIRMWARE'"
+    ;;
+  info)
+    run_toolchain bash -c 'rustc --version && cargo --version && espflash --version'
+    if serial="$(find_serial_device)"; then
+      printf 'Serial device: %s (GID %s)\n' "$serial" "$(stat -c %g "$serial")"
+    fi
+    ;;
+  shell)
+    run_toolchain bash
+    ;;
+  -h|--help|help|'')
+    usage
+    ;;
+  *)
+    printf 'Unknown command: %s\n\n' "$command" >&2
+    usage >&2
+    exit 2
+    ;;
+esac

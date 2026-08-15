@@ -1,0 +1,26 @@
+[package]
+name = "laptop-cooler"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.95"
+
+[[bin]]
+name = "laptop-cooler"
+path = "src/main.rs"
+test = false
+
+[dependencies]
+critical-section = "=1.2.0"
+esp-backtrace = { version = "=0.19.0", features = ["esp32", "panic-handler", "println"] }
+esp-bootloader-esp-idf = { version = "=0.5.0", features = ["esp32"] }
+esp-hal = { version = "=1.1.2", features = ["esp32", "unstable"] }
+esp-println = { version = "=0.17.0", features = ["esp32"] }
+
+[profile.dev]
+opt-level = "s"
+
+[profile.release]
+codegen-units = 1
+debug = 2
+lto = "fat"
+opt-level = "s"
