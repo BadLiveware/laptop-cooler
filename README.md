@@ -2,6 +2,12 @@
 
 Bare-metal Rust firmware for a PWM-controlled laptop cooler. The complete Xtensa Rust toolchain runs in Docker; Rust, `espup`, and `espflash` are not installed on the host.
 
+## v0.1.0
+
+This may be the worst soldering job i have ever done
+
+![The v0.1.0 laptop cooler controller wiring](docs/images/v0.1.0.jpg)
+
 ## Hardware target
 
 - AZDelivery ESP32 D1 Mini (`wemos_d1_mini32`)
