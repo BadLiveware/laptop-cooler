@@ -1,0 +1,9 @@
+[build]
+target = "x86_64-unknown-linux-gnu"
+rustflags = []
+
+[target.x86_64-unknown-linux-gnu]
+rustflags = []
+
+[unstable]
+build-std = []

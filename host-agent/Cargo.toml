@@ -1,0 +1,10 @@
+[package]
+name = "laptop-cooler-agent"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.95"
+
+[dependencies]
+
+[dev-dependencies]
+heapless = "=0.9.1"

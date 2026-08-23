@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+ROOT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+export CARGO_ENCODED_RUSTFLAGS=''
+
+case "${1:-}" in
+  build)
+    (cd "$ROOT_DIR" && cargo build --release --target x86_64-unknown-linux-gnu)
+    ;;
+  test)
+    (cd "$ROOT_DIR" && cargo test --target x86_64-unknown-linux-gnu)
+    ;;
+  run)
+    shift
+    (cd "$ROOT_DIR" && cargo run --release --target x86_64-unknown-linux-gnu -- "$@")
+    ;;
+  *)
+    printf 'Usage: %s {build|test|run}\n' "$0" >&2
+    exit 2
+    ;;
+esac

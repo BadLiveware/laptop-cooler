@@ -59,16 +59,16 @@ case "$command" in
     run_toolchain cargo clean
     ;;
   upload)
-    run_device bash -c "cargo build --release && espflash flash --chip esp32 --port /dev/ttyUSB0 '$FIRMWARE'"
+    run_device bash -c "cargo build --release && espflash flash --chip esp32 --partition-table /workspace/partitions.csv --port \"\$SERIAL_DEVICE\" '$FIRMWARE'"
     ;;
   monitor)
-    run_device espflash monitor --port /dev/ttyUSB0
+    run_device bash -c 'exec espflash monitor --port "$SERIAL_DEVICE"'
     ;;
   monitor-log)
-    run_device espflash monitor --non-interactive --port /dev/ttyUSB0
+    run_device bash -c 'exec espflash monitor --non-interactive --port "$SERIAL_DEVICE"'
     ;;
   upload-monitor)
-    run_device bash -c "cargo build --release && espflash flash --monitor --chip esp32 --port /dev/ttyUSB0 '$FIRMWARE'"
+    run_device bash -c "cargo build --release && espflash flash --monitor --chip esp32 --partition-table /workspace/partitions.csv --port \"\$SERIAL_DEVICE\" '$FIRMWARE'"
     ;;
   info)
     run_toolchain bash -c 'rustc --version && cargo --version && espflash --version'

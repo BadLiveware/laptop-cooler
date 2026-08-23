@@ -12,6 +12,7 @@ x-toolchain: &toolchain
   environment:
     CARGO_HOME: /workspace/.cache/cargo
     CARGO_TARGET_DIR: /workspace/.cache/target
+    SERIAL_DEVICE: "${SERIAL_DEVICE:-/dev/ttyUSB0}"
   volumes:
     - .:/workspace
 
@@ -22,6 +23,6 @@ services:
   device:
     <<: *toolchain
     devices:
-      - "${SERIAL_DEVICE:-/dev/ttyUSB0}:/dev/ttyUSB0:rwm"
+      - "${SERIAL_DEVICE:-/dev/ttyUSB0}:${SERIAL_DEVICE:-/dev/ttyUSB0}:rwm"
     group_add:
       - "${SERIAL_GID:-0}"

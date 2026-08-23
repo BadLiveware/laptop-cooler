@@ -1,0 +1,13 @@
+[Unit]
+Description=Laptop cooler temperature agent
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=%h/.local/bin/laptop-cooler-agent
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

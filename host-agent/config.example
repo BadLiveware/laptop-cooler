@@ -1,0 +1,19 @@
+# Must match the control token entered on the cooler setup page.
+token=replace_with_your_token
+
+# Temperature-to-PWM curve as temperature_C:duty_percent points.
+# Temperatures and duties must increase; the last point must be 100%.
+curve=45:25,55:40,65:60,75:80,80:100
+
+# Stability controls. Samples are smoothed, target changes require a meaningful
+# duty difference, and output moves in discrete steps with asymmetric slew.
+smoothing_seconds=5
+duty_step_percent=5
+duty_hysteresis_percent=5
+ramp_up_percent_per_second=10
+ramp_down_percent_per_second=2
+emergency_temperature_c=80
+
+# Optional transport overrides:
+# destination=255.255.255.255:42110
+# interval_ms=1000
